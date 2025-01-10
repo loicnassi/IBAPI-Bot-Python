@@ -664,6 +664,10 @@ class Report(object):
         report = {}
         date_format = '%Y-%m-%d %H:%M:%S'
 
+        report['Date Start'] = report['Date End'] = self.backtest.signals.index[0]
+        report['Date End'] = self.backtest.signals.index[-1]
+        report['Length Backtest'] = pd.to_datetime(report['Date End'],format=date_format)-pd.to_datetime(report['Date Start'], format=date_format)
+        
         report['Equity Initial [$]'] = self.backtest.params.get('amount', 1)
         report['Equity Final [$]'] = self.backtest.vl
         report['Return [%]'] = (report['Equity Final [$]']/self.backtest.params.get('amount', 1) - 1) * 100
