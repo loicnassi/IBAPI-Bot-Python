@@ -121,7 +121,6 @@ class Basket():
         self.name = '-'.join([asset.name for asset in assets])
         self.assets = {asset.name : asset for asset in assets}
         self.prices = self.consolidate()
-        self.barsize = self.compute_barsize()
         self.quantities = 0
         self.position = 0
         self.spread_trade_recap = pd.Series()
@@ -156,18 +155,9 @@ class Basket():
         return df
     
     def compute_barsize(self):
-
-        barsize=0
-        for i in range(1, len(self.prices.index)):
-            date_format = '%Y-%m-%d %H:%M:%S'
-            day_prev = datetime.strptime(self.prices.index[i-1], date_format)
-            day = datetime.strptime(self.prices.index[i], date_format)
-
-            if barsize==0:
-                barsize = (day - day_prev).total_seconds()
-            else:
-                barsize = min(barsize, (day - day_prev).total_seconds())
-
+        self.prices.index = pd.to_datetime(self.prices.index)
+        time_diffs = self.prices.index.to_series().diff().dt.total_seconds()
+        barsize = time_diffs.dropna().min()
         return barsize
 
     def compute_spread(self):
@@ -461,6 +451,7 @@ class BasketTrading():
         @param data:
         """
 
+        basket.barsize = basket.compute_barsize()
         self.basket = basket
         self.params = params
         self.basket_train, self.basket_test = self.split_train_test(self.params.get('proportion', 0.5))
