@@ -514,11 +514,11 @@ class BasketTrading():
     def compute_costs(self, orders):
 
         tc = np.sum(order.transaction_costs for order in orders)
-        bf = np.sum((self.basket_bt.half_life * self.basket_bt.barsize) * (order.asset.borrowing_fees/(360 * 86400)) * order.quantity * order.level_entry for order in orders)
+        #bf = np.sum((self.basket_bt.half_life * self.basket_bt.barsize) * (order.asset.borrowing_fees/(360 * 86400)) * order.quantity * order.level_entry for order in orders)
         slippage = np.sum((order.level_entry - order.level_entry_signal) * order.quantity for order in orders)
         drift = self.basket_bt.compute_spread_drift() * self.vl
 
-        costs = 2 * (tc + slippage) + drift + bf
+        costs = 2 * (tc + slippage) + drift
 
         return costs
 
