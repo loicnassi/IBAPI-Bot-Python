@@ -285,8 +285,8 @@ class Basket():
         
         orders=[]
         for asset in self.assets.values():
-            order = asset.close_position(level_exits[asset.name], time_exit, intensity, simulated)
-            orders.append(order)
+            if asset.position != 0:
+                orders.append(asset.close_position(level_exits[asset.name], time_exit, intensity, simulated)) 
 
         if not simulated:    
             self.position = 0
